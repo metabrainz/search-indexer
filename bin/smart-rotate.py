@@ -37,7 +37,7 @@ for dir in dirs:
 
     if os.path.exists(os.path.join(new, dir)) and os.path.exists(os.path.join(cur, dir)):
         try:
-            os.unlink(os.path.join(old, dir))
+            shutil.rmtree(os.path.join(old, dir))
             print "remove %s" % os.path.join(old, dir)
         except OSError, e:
             if e.errno != 2:
