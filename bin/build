@@ -1,13 +1,28 @@
 #!/bin/bash
 
-OFF_PEAK_HOUR=5
-THRESHOLD=72000 # 20 hours
+REC_HOUR=5
+REC_THRESHOLD=72000 # 20 hours
+REC_TIMESTAMP_FILE="/home/search/recording_build_timestamp"
 
-TIMESTAMP_FILE="/home/search/recording_build_timestamp"
-LAST_BUILD=`cat $TIMESTAMP_FILE`
+FREEDB_DAY=2
+FREEDB_HOUR=4
+FREEDB_THRESHOLD=86400 # 24 hours
+FREEDB_TIMESTAMP_FILE="/home/search/freedb_build_timestamp"
+
+if [ ! -f $FREEDB_TIMESTAMP_FILE ]; then
+	date +%s > $FREEDB_TIMESTAMP_FILE
+fi
+if [ ! -f $REC_TIMESTAMP_FILE ]; then
+	date +%s > $REC_TIMESTAMP_FILE
+fi
+
+REC_LAST_BUILD=`cat $REC_TIMESTAMP_FILE`
+FREEDB_LAST_BUILD=`cat $FREEDB_TIMESTAMP_FILE`
 NOW=`date +%s`
+DAY=`date +%d`
 HOUR=`date +%H`
-ELAPSED=`expr $NOW - $LAST_BUILD`
+REC_ELAPSED=`expr $NOW - $REC_LAST_BUILD`
+FREEDB_ELAPSED=`expr $NOW - $FREEDB_LAST_BUILD`
 
 echo "$0 starting"
 
@@ -25,12 +40,22 @@ run_and_show_errors() {
 }
 
 
-if [ "$ELAPSED" -gt "$THRESHOLD" ] && [ "$HOUR" -ge "$OFF_PEAK_HOUR" ]; then
-	echo "Building recording index. Last index was started $ELAPSED seconds ago"
-	date +%s > $TIMESTAMP_FILE
+if [ "$FREEDB_ELAPSED" -ge "$FREEDB_THRESHOLD" ] && 
+   [ "$DAY" -eq "$FREEDB_DAY" ] &&
+   [ "$HOUR" -ge "$FREEDB_HOUR" ]; then
+	echo "Building freedb index. Last index was started $FREEDB_ELAPSED seconds ago"
+	date +%s > $FREEDB_TIMESTAMP_FILE
+	run_and_show_errors make freedb
+else
+	echo "Not building freedb index. ($FREEDB_ELAPSED of $FREEDB_THRESHOLD seconds since last freedb build)"
+fi
+
+if [ "$REC_ELAPSED" -ge "$REC_THRESHOLD" ] && [ "$HOUR" -ge "$REC_HOUR" ]; then
+	echo "Building recording index. Last index was started $REC_ELAPSED seconds ago"
+	date +%s > $REC_TIMESTAMP_FILE
 	run_and_show_errors make recording
 else
-	echo "Not building recording index. ($ELAPSED seconds since last recording build)"
+	echo "Not building recording index. ($REC_ELAPSED of $REC_THRESHOLD seconds since last recording build)"
 fi
 
 run_and_show_errors make
