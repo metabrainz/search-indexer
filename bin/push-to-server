@@ -1,0 +1,26 @@
+#!/bin/sh
+set -e
+
+HOST="$1"
+COMMAND="$2"
+SSH="ssh -i $HOME/.ssh/push-to-server_id -o IdentitiesOnly=yes"
+
+case "$2" in
+	sync)
+		# 29999 too high - packet loss
+		# 9999 was ok
+		exec rsync -e "$SSH" --stats --progress -av --delete --link-dest=/home/search/data/cur/ ./data/cur/ $HOST:/home/search/data/new/
+		;;
+	rotate)
+		$SSH $HOST rotate
+		;;
+	restart)
+		$SSH $HOST restart
+		;;
+	*)
+		echo "Unknown action in $0" >&2
+		exit 1
+		;;
+esac
+
+# eof

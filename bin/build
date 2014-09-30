@@ -1,0 +1,51 @@
+#!/bin/bash
+
+echo "$0 starting"
+
+run_and_show_errors() {
+	echo "Running $@"
+	if ! "$@"
+	then
+		RC=$?
+		echo "FAIL '$@' (rc=$RC)"
+		return 1
+	else
+		echo "PASS '$@'"
+		return 0
+	fi
+}
+
+run_and_show_errors make
+
+find log -type f -mtime +10 -delete
+
+run_and_show_errors fix-perms
+
+PUSH_TO="dora roobarb"
+
+for h in $PUSH_TO
+do
+	run_and_show_errors push-to-server $h.localdomain sync ; eval "${h}_rc=$?"
+done
+
+for h in $PUSH_TO
+do
+	if eval "[ \$${h}_rc = 0 ]" ; then run_and_show_errors push-to-server $h.localdomain rotate ; eval "${h}_rc=$?" ; fi
+done
+
+for h in $PUSH_TO
+do
+	if eval "[ \$${h}_rc = 0 ]" ; then
+		run_and_show_errors push-to-server $h.localdomain restart
+		r=$?
+		eval "${h}_rc=$r"
+		# The restart causes the load on the target server to spike for a few minutes. Delaying
+		# 2 minutes here allows the server to cache the index into ram and return to normal performance.
+		# This prevents us from degading overall search performance every 3 hours.
+		sleep 120 
+	fi
+done
+
+echo "$0 completed"
+
+# eof

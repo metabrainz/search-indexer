@@ -1,0 +1,29 @@
+#!/bin/sh
+set -e
+
+case "$SSH_ORIGINAL_COMMAND" in
+	"rsync --server -vlogDtpre.iLsf --delete --link-dest /home/search/data/cur/ . /home/search/data/new/")
+		exec $SSH_ORIGINAL_COMMAND
+		;;
+	"rotate")
+		cd data
+		[ -d new ]
+		rm -rf old
+		mv cur old
+		mv new cur
+		;;
+        "restart")
+                # We restart the server to use new indexes by calling init=mmap
+                wget -O /dev/null 'http://localhost:8080?init=mmap'
+
+                # This enables the rate limiting for the search server
+                wget -O /dev/null 'http://localhost:8080/?rate=true'
+		;;
+	*)
+		echo "Unrecognised command for $0" >&2
+		echo "The command was: $SSH_ORIGINAL_COMMAND" >&2
+		exit 1
+		;;
+esac
+
+# eof

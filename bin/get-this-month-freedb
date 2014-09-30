@@ -1,0 +1,26 @@
+#!/bin/sh
+
+set -e
+
+mkdir -p freedb-data
+cd freedb-data
+
+FILE=freedb-complete-`date +'%Y%m'`01.tar.bz2
+URL=http://ftp.freedb.org/pub/freedb/$FILE
+
+if [ ! -f $FILE ]
+then
+	mkdir -p tmp
+	q="-q" ; if [ -t 1 ] ; then q="" ; fi
+	# At current file sizes, this --limit-rate means a download time of about six hours
+	wget $q --limit-rate=30000 -N --continue -O tmp/$FILE $URL
+	mv -v tmp/$FILE ./
+fi
+
+LATEST=`ls -1tr freedb-complete-[0-9]*.tar.bz2 | tail -1`
+rm -f freedb-complete-latest.tar.bz2
+ln -s $LATEST freedb-complete-latest.tar.bz2
+
+find . -name 'freedb-complete-*.tar.bz2' -type f -mtime +40 -delete
+
+# eof

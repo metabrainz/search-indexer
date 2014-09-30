@@ -1,0 +1,9 @@
+#!/bin/sh
+exec java \
+	-Xmx512M \
+	-jar "$JAR" \
+	--db-host totoro.localdomain \
+	--db-name musicbrainz_db_20110516 \
+	--db-user musicbrainz_user \
+	--db-password musicbrainz \
+	"$@"

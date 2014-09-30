@@ -1,0 +1,82 @@
+#!/usr/bin/perl
+
+use warnings;
+use strict;
+
+my $dir = "/home/search/indexdata";
+if (! chdir $dir)
+{
+	print "UNKNOWN: chdir $dir: $!\n";
+	exit 3;
+}
+
+my @indexes = qw(
+annotation_index
+artist_index
+cdstub_index
+freedb_index
+label_index
+recording_index
+releasegroup_index
+release_index
+tag_index
+work_index
+);
+
+my @ok;
+my @warnings;
+my @errors;
+
+for my $i (@indexes)
+{
+	if (!stat($i))
+	{
+		push @errors, "stat $i: $!";
+		next;
+	}
+
+	if ($i eq "freedb_index")
+	{
+		# units: days
+		my ($warn, $crit) = (35, 40);
+		my $age = -M(_);
+		my $s = ($age >= $crit ? 2 : $age >= $warn ? 1 : 0);
+		my $arr = (\@ok, \@warnings, \@errors)[$s];
+		push @$arr, sprintf "%s is %.1f days old", $i, $age;
+	}
+	else
+	{
+		# units: hours
+		my ($warn, $crit) = (6, 9);
+		my $age = 24 * -M(_);
+		my $s = ($age >= $crit ? 2 : $age >= $warn ? 1 : 0);
+		my $arr = (\@ok, \@warnings, \@errors)[$s];
+		push @$arr, sprintf "%s is %.1f hours old", $i, $age;
+	}
+
+}
+
+if (@errors)
+{
+	print "CRITICAL: " . join(", ", @errors);
+	printf " (WARNING: %s)", join ", ", @warnings if @warnings;
+	printf " (OK: %s)", join ", ", @ok if @ok;
+	print "\n";
+	exit 2;
+}
+
+if (@warnings)
+{
+	print "WARNING: " . join(", ", @warnings);
+	printf " (OK: %s)", join ", ", @ok if @ok;
+	print "\n";
+	exit 1;
+}
+
+{
+	print "OK: " . join(", ", @ok);
+	print "\n";
+	exit 0;
+}
+
+# eof

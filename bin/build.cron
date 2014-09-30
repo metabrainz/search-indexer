@@ -1,0 +1,2 @@
+#!/bin/sh
+exec runexclusive -f ~/tmp/build.lock --no-wait -t 36000 build

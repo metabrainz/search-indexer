@@ -1,0 +1,26 @@
+#!/usr/bin/perl
+
+use warnings;
+use strict;
+
+@ARGV == 3 or die;
+my ($path, $warn, $crit) = @ARGV;
+
+if (not stat($path))
+{
+	print("UNKNOWN: stat '$path': $!\n");
+	exit 3;
+}
+
+my $s = (-M(_) >= $crit ? 2 : -M(_) >= $warn ? 1 : 0);
+
+printf "%s: %s is %.1f days old (%s)\n",
+	("OK", "WARNING", "CRITICAL")[$s],
+	$path,
+	-M(_),
+	scalar(gmtime((stat _)[9])),
+	;
+
+exit $s;
+
+# eof

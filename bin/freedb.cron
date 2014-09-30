@@ -1,0 +1,2 @@
+#!/bin/sh
+exec runexclusive -f ~/tmp/freedb.lock --no-wait -t 36000 get-this-month-freedb
