@@ -17,8 +17,7 @@ default:
 	$(MAKE) index TYPE=instrument
 
 recording:
-	$(MAKE) index INDEX=recording_index
-	$(MAKE) rotate INDEX=recording_index
+	$(MAKE) index TYPE=recording
 
 freedb:
 	mkdir -p ./data/tmp

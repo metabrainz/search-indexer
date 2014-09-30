@@ -1,5 +1,14 @@
 #!/bin/bash
 
+OFF_PEAK_HOUR=5
+THRESHOLD=72000 # 20 hours
+
+TIMESTAMP_FILE="/home/search/recording_build_timestamp"
+LAST_BUILD=`cat $TIMESTAMP_FILE`
+NOW=`date +%s`
+HOUR=`date +%H`
+ELAPSED=`expr $NOW - $LAST_BUILD`
+
 echo "$0 starting"
 
 run_and_show_errors() {
@@ -14,6 +23,15 @@ run_and_show_errors() {
 		return 0
 	fi
 }
+
+
+if [ "$ELAPSED" -gt "$THRESHOLD" ] && [ "$HOUR" -ge "$OFF_PEAK_HOUR" ]; then
+	echo "Building recording index. Last index was started $ELAPSED seconds ago"
+	date +%s > $TIMESTAMP_FILE
+	run_and_show_errors make recording
+else
+	echo "Not building recording index. ($ELAPSED seconds since last recording build)"
+fi
 
 run_and_show_errors make
 
