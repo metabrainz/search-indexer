@@ -8,9 +8,7 @@ case "$SSH_ORIGINAL_COMMAND" in
 	"rotate")
 		cd data
 		[ -d new ]
-		rm -rf old
-		mv cur old
-		mv new cur
+                ./smart-rotate cur new old
 		;;
         "restart")
                 # We restart the server to use new indexes by calling init=mmap
