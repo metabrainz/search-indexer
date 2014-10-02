@@ -11,16 +11,21 @@ if (! chdir $dir)
 }
 
 my @indexes = qw(
-annotation_index
+area_index
 artist_index
+annotation_index
+releasegroup_index
+release_index
+recording_index
+place_index
 cdstub_index
 freedb_index
 label_index
-recording_index
-releasegroup_index
-release_index
 tag_index
 work_index
+editor_index
+instrument_index
+series_index
 );
 
 my @ok;
@@ -44,10 +49,19 @@ for my $i (@indexes)
 		my $arr = (\@ok, \@warnings, \@errors)[$s];
 		push @$arr, sprintf "%s is %.1f days old", $i, $age;
 	}
+        elsif ($i eq "recording_index")
+	{
+		# units: hours
+		my ($warn, $crit) = (26, 30);
+		my $age = 24 * -M(_);
+		my $s = ($age >= $crit ? 2 : $age >= $warn ? 1 : 0);
+		my $arr = (\@ok, \@warnings, \@errors)[$s];
+		push @$arr, sprintf "%s is %.1f hours old", $i, $age;
+	}
 	else
 	{
 		# units: hours
-		my ($warn, $crit) = (6, 9);
+		my ($warn, $crit) = (3, 5);
 		my $age = 24 * -M(_);
 		my $s = ($age >= $crit ? 2 : $age >= $warn ? 1 : 0);
 		my $arr = (\@ok, \@warnings, \@errors)[$s];
