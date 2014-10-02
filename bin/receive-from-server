@@ -2,8 +2,9 @@
 set -e
 
 case "$SSH_ORIGINAL_COMMAND" in
-	"rsync --server -vlogDtpre.iLsf --delete --link-dest /home/search/data/cur/ . /home/search/data/new/")
-		exec $SSH_ORIGINAL_COMMAND
+	"sync")
+                rm -rf /home/search/data/new/*
+		nohup nc -l 7000 | tar -xO -C /home/search/data/new &
 		;;
 	"rotate")
 		cd data

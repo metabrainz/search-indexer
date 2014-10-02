@@ -7,9 +7,8 @@ SSH="ssh -i $HOME/.ssh/push-to-server_id -o IdentitiesOnly=yes"
 
 case "$2" in
 	sync)
-		# 29999 too high - packet loss
-		# 9999 was ok
-		exec rsync -e "$SSH" --stats --progress -av --delete --link-dest=/home/search/data/cur/ ./data/cur/ $HOST:/home/search/data/new/
+                $SSH $HOST sync 
+                tar cvO - /home/search/data/new | nc $HOST 7000
 		;;
 	rotate)
 		$SSH $HOST rotate
