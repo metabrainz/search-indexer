@@ -8,7 +8,9 @@ SSH="ssh -i $HOME/.ssh/push-to-server_id -o IdentitiesOnly=yes"
 case "$2" in
 	sync)
                 $SSH $HOST sync 
-                tar cvO - /home/search/data/new | nc $HOST 7000
+		cd /home/search/data/cur
+                tar cvO . | nc $HOST 7000
+		cd -
 		;;
 	rotate)
 		$SSH $HOST rotate
