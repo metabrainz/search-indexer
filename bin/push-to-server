@@ -7,10 +7,17 @@ SSH="ssh -i $HOME/.ssh/push-to-server_id -o IdentitiesOnly=yes"
 
 case "$2" in
 	sync)
+		echo "delete old indexes"
                 $SSH $HOST prepare 
+
+		echo "start nc on target"
                 $SSH $HOST sync &
-		sleep 5
+
+		echo "sleeping 30 seconds"
+		sleep 30
 		cd /home/search/data/cur
+
+		echo "start copy!"
                 tar cvO . | nc $HOST 7000
 		cd -
 		;;

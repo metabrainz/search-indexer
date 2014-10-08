@@ -1,4 +1,4 @@
-JAR:= jar/http-svn-musicbrainz-org-search-server-trunk--13753-index-with-dependencies.jar
+JAR:= jar/search-indexer-latest.jar
 
 default: 
 	$(MAKE) index TYPE=area
