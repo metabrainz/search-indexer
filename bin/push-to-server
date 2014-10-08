@@ -7,7 +7,9 @@ SSH="ssh -i $HOME/.ssh/push-to-server_id -o IdentitiesOnly=yes"
 
 case "$2" in
 	sync)
-                $SSH $HOST sync 
+                $SSH $HOST prepare 
+                $SSH $HOST sync &
+		sleep 5
 		cd /home/search/data/cur
                 tar cvO . | nc $HOST 7000
 		cd -
