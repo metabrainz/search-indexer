@@ -33,11 +33,11 @@ index:
 
 rotate:
 	[ "$(INDEX)" ]
-	chmod 755 ./data/tmp/$(INDEX)
-	chmod 644 ./data/tmp/$(INDEX)/*
+	! chmod 755 ./data/tmp/$(INDEX)
+	! chmod 644 ./data/tmp/$(INDEX)/*
 	mkdir -m 755 -p ./data/old ./data/cur
 	rm -rf ./data/old/$(INDEX).1
 	if [ -e ./data/old/$(INDEX).0 ] ; then mv ./data/old/$(INDEX).0 ./data/old/$(INDEX).1 ; fi
 	if [ -e ./data/cur/$(INDEX) ]   ; then mv ./data/cur/$(INDEX)   ./data/old/$(INDEX).0 ; fi
-	mv -v ./data/tmp/$(INDEX) ./data/cur/$(INDEX)
+	! mv -v ./data/tmp/$(INDEX) ./data/cur/$(INDEX)
 	rm -rf ./data/old/$(INDEX).1

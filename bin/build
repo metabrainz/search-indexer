@@ -48,6 +48,7 @@ if [ "$FREEDB_ELAPSED" -ge "$FREEDB_THRESHOLD" ] &&
 	run_and_show_errors make freedb
 else
 	echo "Not building freedb index. ($FREEDB_ELAPSED of $FREEDB_THRESHOLD seconds since last freedb build)"
+	run_and_show_errors make rotate INDEX=freedb_index
 fi
 
 if [ "$REC_ELAPSED" -ge "$REC_THRESHOLD" ] && [ "$HOUR" -ge "$REC_HOUR" ]; then
@@ -56,6 +57,7 @@ if [ "$REC_ELAPSED" -ge "$REC_THRESHOLD" ] && [ "$HOUR" -ge "$REC_HOUR" ]; then
 	run_and_show_errors make recording
 else
 	echo "Not building recording index. ($REC_ELAPSED of $REC_THRESHOLD seconds since last recording build)"
+	run_and_show_errors make rotate INDEX=recording_index
 fi
 
 run_and_show_errors make
