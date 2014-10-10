@@ -31,6 +31,15 @@ index:
 	env JAR=$(JAR) builder --indexes-dir ./data/tmp --indexes $(TYPE)
 	$(MAKE) rotate INDEX=$(TYPE)_index
 
+cleanup:
+	if [ -e ./data/cur/$(INDEX) ] ; then 
+	    mkdir -m 755 -p ./data/old ./data/cur
+	    rm -rf ./data/old/$(INDEX).1
+	    if [ -e ./data/old/$(INDEX).0 ] ; then mv ./data/old/$(INDEX).0 ./data/old/$(INDEX).1 ; fi
+	    mv ./data/cur/$(INDEX)   ./data/old/$(INDEX).0
+	    rm -rf ./data/old/$(INDEX).1
+	fi
+
 rotate:
 	[ "$(INDEX)" ]
 	! chmod 755 ./data/tmp/$(INDEX)
