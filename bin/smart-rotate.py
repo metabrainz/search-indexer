@@ -35,6 +35,7 @@ for dir in dirs:
     if dir == '.' or dir == '..':
         continue
 
+    # if an index exits in the new path and the current path, save it in old
     if os.path.exists(os.path.join(new, dir)) and os.path.exists(os.path.join(cur, dir)):
         try:
             shutil.rmtree(os.path.join(old, dir))
