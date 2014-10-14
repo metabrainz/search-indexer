@@ -65,34 +65,43 @@ run_and_show_errors make
 
 PUSH_TO="dora roobarb"
 
-#for h in $PUSH_TO
-#do
-#	run_and_show_errors push-to-server $h.localdomain sync ; eval "${h}_rc=$?"
-#done
+for h in $PUSH_TO
+do
+	run_and_show_errors push-to-server $h.localdomain sync ; eval "${h}_rc=$?"
+done
 
-#for h in $PUSH_TO
-#do
-#	if eval "[ \$${h}_rc = 0 ]" ; then run_and_show_errors push-to-server $h.localdomain rotate ; eval "${h}_rc=$?" ; fi
-#done
+for h in $PUSH_TO
+do
+	if eval "[ \$${h}_rc = 0 ]" ; then run_and_show_errors push-to-server $h.localdomain rotate ; eval "${h}_rc=$?" ; fi
+done
 
-#for h in $PUSH_TO
-#do
-#	if eval "[ \$${h}_rc = 0 ]" ; then
-#		run_and_show_errors push-to-server $h.localdomain restart
-#		r=$?
-#		eval "${h}_rc=$r"
-#		# The restart causes the load on the target server to spike for a few minutes. Delaying
-#		# 2 minutes here allows the server to cache the index into ram and return to normal performance.
-#		# This prevents us from degading overall search performance every 3 hours.
-#		sleep 120 
-#	fi
-#done
+for h in $PUSH_TO
+do
+	if eval "[ \$${h}_rc = 0 ]" ; then
+		run_and_show_errors push-to-server $h.localdomain restart
+		r=$?
+		eval "${h}_rc=$r"
+		# The restart causes the load on the target server to spike for a few minutes. Delaying
+		# 2 minutes here allows the server to cache the index into ram and return to normal performance.
+		# This prevents us from degading overall search performance every 3 hours.
+		sleep 120 
+	fi
+done
 
 # Rotate index files
-
 echo "saved generated indexes"
-rm -rf data/old/*
-! mv data/cur/* data/old/
+types=("area_index" "artist_index" "releasegroup_index" "release_index" "label_index" "cdstub_index" "tag_index" "work_index" "annotation_index" "place_index" "url_index" "series_index" "editor_index" "instrument_index" "freedb_index" "recording_index")
+for type in "${types[@]}"
+do
+  if [ -e data/cur/$type ] && [ -e data/old/$type ] ; then
+	echo "rm old/$type"
+	rm -rf data/old/$type
+  fi
+  if [ -e data/cur/$type ] ; then
+	echo "mv cur/$type old/$type"
+	mv data/cur/$type data/old/$type
+  fi
+done
 
 echo "$0 completed"
 
