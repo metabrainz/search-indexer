@@ -61,7 +61,7 @@ for my $i (@indexes)
 	else
 	{
 		# units: hours
-		my ($warn, $crit) = (3, 5);
+		my ($warn, $crit) = (7, 9);
 		my $age = 24 * -M(_);
 		my $s = ($age >= $crit ? 2 : $age >= $warn ? 1 : 0);
 		my $arr = (\@ok, \@warnings, \@errors)[$s];
