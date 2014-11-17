@@ -14,6 +14,7 @@ default:
 	$(MAKE) index TYPE=url
 	$(MAKE) index TYPE=series
 	$(MAKE) index TYPE=editor
+	$(MAKE) index TYPE=event
 	$(MAKE) index TYPE=instrument
 
 recording:

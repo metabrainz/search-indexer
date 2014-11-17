@@ -90,7 +90,7 @@ done
 
 # Rotate index files
 echo "saved generated indexes"
-types=("area_index" "artist_index" "releasegroup_index" "release_index" "label_index" "cdstub_index" "tag_index" "work_index" "annotation_index" "place_index" "url_index" "series_index" "editor_index" "instrument_index" "freedb_index" "recording_index")
+types=("area_index" "artist_index" "releasegroup_index" "release_index" "label_index" "cdstub_index" "tag_index" "work_index" "annotation_index" "place_index" "url_index" "series_index" "editor_index" "instrument_index" "freedb_index" "recording_index" "event_index")
 for type in "${types[@]}"
 do
   if [ -e data/cur/$type ] && [ -e data/old/$type ] ; then

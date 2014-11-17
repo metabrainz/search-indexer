@@ -26,6 +26,7 @@ work_index
 editor_index
 instrument_index
 series_index
+event_index
 );
 
 my @ok;
