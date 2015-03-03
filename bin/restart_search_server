@@ -1,0 +1,4 @@
+#!/bin/sh
+
+# kill them all and let god sort them out! Besides, fuck Java!
+killall -9 java
