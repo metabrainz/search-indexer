@@ -14,8 +14,11 @@ case "$SSH_ORIGINAL_COMMAND" in
 		../bin/smart-rotate.py cur new old
 		;;
         "restart")
-                # We restart the server to use new indexes by calling init=mmap
-                wget -O /dev/null 'http://localhost:8080?init=mmap'
+                # Shoot first, let god sort them out
+                killall -9 java
+
+                # Wait for the server to start
+                sleep 15
 
                 # This enables the rate limiting for the search server
                 wget -O /dev/null 'http://localhost:8080/?rate=true'
