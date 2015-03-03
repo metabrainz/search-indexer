@@ -15,7 +15,7 @@ case "$SSH_ORIGINAL_COMMAND" in
 		;;
         "restart")
                 # Shoot first, let god sort them out
-                killall -9 java
+                sudo ../bin/restart_search_server
 
                 # Wait for the server to start
                 sleep 15
