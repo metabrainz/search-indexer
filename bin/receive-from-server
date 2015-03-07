@@ -21,7 +21,7 @@ case "$SSH_ORIGINAL_COMMAND" in
                 sleep 15
 
                 # This enables the rate limiting for the search server
-                wget -O /dev/null 'http://localhost:8080/?rate=true'
+                #wget -O /dev/null 'http://localhost:8080/?rate=true'
 		;;
 	*)
 		echo "Unrecognised command for $0" >&2
