@@ -82,9 +82,9 @@ do
 		r=$?
 		eval "${h}_rc=$r"
 		# The restart causes the load on the target server to spike for a few minutes. Delaying
-		# 2 minutes here allows the server to cache the index into ram and return to normal performance.
+		# 5 minutes here allows the server to cache the index into ram and return to normal performance.
 		# This prevents us from degading overall search performance every 3 hours.
-		sleep 120 
+		sleep 300 
 	fi
 done
 
