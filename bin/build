@@ -1,6 +1,6 @@
 #!/bin/bash
 
-REC_HOUR=5
+REC_HOUR=1
 REC_THRESHOLD=72000 # 20 hours
 REC_TIMESTAMP_FILE="/home/search/recording_build_timestamp"
 
