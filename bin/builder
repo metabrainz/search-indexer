@@ -1,5 +1,6 @@
 #!/bin/sh
-exec java \
+export JAVA_HOME=/usr/local/java
+exec /usr/local/java/bin/java \
 	-Xmx512M \
 	-jar "$JAR" \
 	--db-host totoro.localdomain \

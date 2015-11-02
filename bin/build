@@ -55,8 +55,12 @@ fi
 
 if [ "$REC_ELAPSED" -ge "$REC_THRESHOLD" ] && [ "$HOUR" -ge "$REC_HOUR" ]; then
 	echo "Building recording index. Last index was started $REC_ELAPSED seconds ago"
-	date +%s > $REC_TIMESTAMP_FILE
-	run_and_show_errors make recording
+	run_and_show_errors make recording 
+        if [ $? -eq 0 ];
+	then
+		date +%s > $REC_TIMESTAMP_FILE
+	fi
+	$? = 0
 else
 	echo "Not building recording index. ($REC_ELAPSED of $REC_THRESHOLD seconds since last recording build)"
 fi
