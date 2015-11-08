@@ -1,11 +1,13 @@
 #!/bin/bash
 
 REC_HOUR=1
-REC_THRESHOLD=72000 # 20 hours
+REC_MAX_HOUR=5
+REC_THRESHOLD=$((24*3600))
 REC_TIMESTAMP_FILE="/home/search/recording_build_timestamp"
 
 FREEDB_DAY=2
 FREEDB_HOUR=4
+FREEDB_MAX_HOUR=12
 FREEDB_THRESHOLD=86400 # 24 hours
 FREEDB_TIMESTAMP_FILE="/home/search/freedb_build_timestamp"
 
@@ -45,7 +47,8 @@ run_and_show_errors() {
 
 if [ "$FREEDB_ELAPSED" -ge "$FREEDB_THRESHOLD" ] && 
    [ "$DAY" -eq "$FREEDB_DAY" ] &&
-   [ "$HOUR" -ge "$FREEDB_HOUR" ]; then
+   [ "$HOUR" -ge "$FREEDB_HOUR" ] &&
+   [ "$HOUR" -le "$FREEDB_MAX_HOUR" ]; then
 	echo "Building freedb index. Last index was started $FREEDB_ELAPSED seconds ago"
 	date +%s > $FREEDB_TIMESTAMP_FILE
 	run_and_show_errors make freedb
@@ -53,7 +56,7 @@ else
 	echo "Not building freedb index. ($FREEDB_ELAPSED of $FREEDB_THRESHOLD seconds since last freedb build)"
 fi
 
-if [ "$REC_ELAPSED" -ge "$REC_THRESHOLD" ] && [ "$HOUR" -ge "$REC_HOUR" ]; then
+if [ "$REC_ELAPSED" -ge "$REC_THRESHOLD" ] && [ "$HOUR" -ge "$REC_HOUR" ] && [ "$HOUR" -le "$REC_MAX_HOUR" ]; then
 	echo "Building recording index. Last index was started $REC_ELAPSED seconds ago"
 	run_and_show_errors make recording 
         if [ $? -eq 0 ];
