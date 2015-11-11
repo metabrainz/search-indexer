@@ -2,7 +2,7 @@
 
 REC_HOUR=1
 REC_MAX_HOUR=12
-REC_THRESHOLD=$((24*3600))
+REC_THRESHOLD=$((12*3600))
 REC_TIMESTAMP_FILE="/home/search/recording_build_timestamp"
 
 FREEDB_DAY=2
