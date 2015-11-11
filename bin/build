@@ -64,7 +64,6 @@ if [ "$REC_ELAPSED" -ge "$REC_THRESHOLD" ] && [ "$HOUR" -ge "$REC_HOUR" ] && [ "
 	then
 		echo "$START" > $REC_TIMESTAMP_FILE
 	fi
-	$? = 0
 else
 	echo "Not building recording index. ($REC_ELAPSED of $REC_THRESHOLD seconds since last recording build)"
 fi
