@@ -1,27 +1,44 @@
 #!/bin/sh
 set -e
 
+SEARCH_HOME=/home/search
+SEARCH_SYNC_PORT=7000
+SEARCH_SERVLET_URL="http://localhost:8080"
+SEARCH_SERVLET_RATE="true"
+
+# optionally, read from a config file, as env vars cannot easily be passed via ssh authorized_keys command
+SEARCH_CONFIG="$HOME/.sync-search-servers.conf"
+[ -e "$SEARCH_CONFIG" ] && . "$SEARCH_CONFIG"
+
+if [ -z "$SSH_ORIGINAL_COMMAND" ]; then
+	echo "Usage: $0 prepare|sync|rotate|restart" >&2
+	set|grep '^SEARCH_'
+	exit 1
+fi
+
+
+cd $SEARCH_HOME || exit 1
+
 case "$SSH_ORIGINAL_COMMAND" in
-        "prepare")
-                rm -rf /home/search/data/new/*
-                ;;
-        "sync")
-                nc -dl 7000 | tar -x -C /home/search/data/new
-                ;;
+    "prepare")
+		rm -rf data/new/*
+		;;
+    "sync")
+        nc -dl $SEARCH_SYNC_PORT | tar -x -C data/new
+        ;;
 	"rotate")
 		cd data
-		[ -d new ]
-		../bin/smart-rotate.py cur new old
+		[ -d new ] && $SEARCH_HOME/bin/smart-rotate.py cur new old
+		cd -
 		;;
-        "restart")
-                # Shoot first, let god sort them out
-                sudo /home/search/search-indexer/bin/restart_search_server
+    "restart")
+        # Shoot first, let god sort them out
+        $SEARCH_HOME/bin/restart_search_server
 
-                # Wait for the server to start
-                sleep 15
-
-                # This enables the rate limiting for the search server
-                wget -O /dev/null 'http://localhost:8080/?rate=true'
+        # This enables the rate limiting for the search server
+		if [ ! -z "$SEARCH_SERVLET_URL" ]; then
+			wget -O /dev/null "$SEARCH_SERVLET_URL/?rate=$SEARCH_SERVLET_RATE"
+		fi
 		;;
 	*)
 		echo "Unrecognised command for $0" >&2

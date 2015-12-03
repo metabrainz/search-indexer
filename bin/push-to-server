@@ -1,25 +1,39 @@
 #!/bin/sh
 set -e
 
+SEARCH_HOME=/home/search
+SEARCH_SYNC_PORT=7000
+SEARCH_SYNC_DELAY=30
+SEARCH_SSH_ID="$SEARCH_HOME/.ssh/push-to-server_id"
+SEARCH_SSH_OPTS="-o IdentitiesOnly=yes"
+
+# optionally, read from a config file, as env vars cannot easily be passed via ssh authorized_keys command
+SEARCH_CONFIG="$HOME/.sync-search-servers.conf"
+[ -e "$SEARCH_CONFIG" ] && . "$SEARCH_CONFIG"
+
 HOST="$1"
 COMMAND="$2"
-SSH="ssh -i $HOME/.ssh/push-to-server_id -o IdentitiesOnly=yes"
+if [ -z "$HOST" ]; then
+	echo "Usage: $0 HOST sync|rotate|restart" >&2
+	set|grep '^SEARCH_'
+	exit 1
+fi
 
-case "$2" in
+SSH="ssh -i $SEARCH_SSH_ID $SEARCH_SSH_OPTS"
+
+case "$COMMAND" in
 	sync)
 		echo "delete old indexes"
-                $SSH $HOST prepare 
+        $SSH $HOST prepare
 
 		echo "start nc on target"
-                $SSH $HOST sync &
+        $SSH $HOST sync &
 
-		echo "sleeping 30 seconds"
-		sleep 30
-		cd /home/search/data/cur
+		echo "sleeping $SEARCH_SYNC_DELAY seconds"
+		sleep $SEARCH_SYNC_DELAY
 
 		echo "start copy!"
-                tar cvO . | nc $HOST 7000
-		cd -
+		(cd $SEARCH_HOME/data/cur && tar cvO .) | nc $HOST $SEARCH_SYNC_PORT
 		;;
 	rotate)
 		$SSH $HOST rotate
@@ -28,7 +42,7 @@ case "$2" in
 		$SSH $HOST restart
 		;;
 	*)
-		echo "Unknown action in $0" >&2
+		echo "Unknown action '$COMMAND' in $0" >&2
 		exit 1
 		;;
 esac

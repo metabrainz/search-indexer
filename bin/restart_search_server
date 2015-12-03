@@ -1,4 +1,26 @@
 #!/bin/sh
 
-# kill them all and let god sort them out! Besides, fuck Java!
-killall -9 java
+SEARCH_RESTART_COMMAND='kill-java'
+SEARCH_RESTART_DELAY=15
+
+SEARCH_CONFIG="$HOME/.sync-search-servers.conf"
+[ -e "$SEARCH_CONFIG" ] && . "$SEARCH_CONFIG"
+
+case "$SEARCH_RESTART_COMMAND" in
+    "kill-java")
+		# kill them all and let god sort them out! Besides, fuck Java!
+		sudo killall -9 java && sleep $SEARCH_RESTART_DELAY
+		;;
+	"svc-jetty")
+		sudo svc -t /etc/service/jetty-service && sleep $SEARCH_RESTART_DELAY
+		;;
+	"svc-tomcat")
+		sudo svc -t /etc/service/tomcat-service && sleep $SEARCH_RESTART_DELAY
+		;;
+	*)
+		echo "Unrecognised command for $0" >&2
+		echo "The command was: $SEARCH_RESTART_COMMAND" >&2
+		echo "Known commands are: kill-java|svc-jetty|svc-tomcat" >&2
+		exit 1
+		;;
+esac
