@@ -3,7 +3,12 @@
 use warnings;
 use strict;
 
-my $dir = "/home/search/indexdata";
+my $search_home = "/home/search";
+if (defined $ENV{'SEARCH_HOME'}) {
+	$search_home = $ENV{'SEARCH_HOME'};
+}
+
+my $dir = "$search_home/indexdata";
 if (! chdir $dir)
 {
 	print "UNKNOWN: chdir $dir: $!\n";
