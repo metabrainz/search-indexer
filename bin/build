@@ -1,15 +1,28 @@
 #!/bin/bash
 
+echo "$0 starting"
+
+if [ -z "$SEARCH_HOME" ]; then
+	SEARCH_HOME=/home/search
+fi
+
+if [ -z "$PUSH_TO" ]; then
+	PUSH_TO="dora roobarb"
+fi
+
+echo "SEARCH_HOME=$SEARCH_HOME PUSH_TO=$PUSH_TO"
+cd $SEARCH_HOME || exit 1
+
 REC_HOUR=1
 REC_MAX_HOUR=12
 REC_THRESHOLD=$((12*3600))
-REC_TIMESTAMP_FILE="/home/search/recording_build_timestamp"
+REC_TIMESTAMP_FILE="$SEARCH_HOME/recording_build_timestamp"
 
 FREEDB_DAY=2
 FREEDB_HOUR=4
 FREEDB_MAX_HOUR=12
 FREEDB_THRESHOLD=86400 # 24 hours
-FREEDB_TIMESTAMP_FILE="/home/search/freedb_build_timestamp"
+FREEDB_TIMESTAMP_FILE="$SEARCH_HOME/freedb_build_timestamp"
 
 if [ ! -f $FREEDB_TIMESTAMP_FILE ]; then
 	date +%s > $FREEDB_TIMESTAMP_FILE
@@ -28,8 +41,6 @@ FREEDB_ELAPSED=`expr $NOW - $FREEDB_LAST_BUILD`
 
 echo "clean up old files"
 ! rm -rf data/cur/*
-
-echo "$0 starting"
 
 run_and_show_errors() {
 	echo "Running $@"
@@ -70,7 +81,6 @@ fi
 
 run_and_show_errors make
 
-PUSH_TO="dora roobarb"
 
 for h in $PUSH_TO
 do
