@@ -1,6 +1,12 @@
 #!/bin/sh
 set -e
-chmod 755 ~
-chmod 755 ~/data
-find ~/data/cur -type d | xargs -r chmod 755
-find ~/data/cur -type f | xargs -r chmod 644
+
+SEARCH_HOME=/home/search
+
+SEARCH_CONFIG="$HOME/.sync-search-servers.conf"
+[ -e "$SEARCH_CONFIG" ] && . "$SEARCH_CONFIG"
+
+chmod 755 "$SEARCH_HOME"
+chmod 755 "$SEARCH_HOME/data"
+find "$SEARCH_HOME/data/cur" -type d | xargs -r chmod 755
+find "$SEARCH_HOME/data/cur" -type f | xargs -r chmod 644
