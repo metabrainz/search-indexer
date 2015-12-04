@@ -2,6 +2,8 @@
 
 SEARCH_HOME=/home/search
 
+SEARCH_JAVA_HOME=/usr/local/java
+SEARCH_JAVA_OPTS_INDEXER="-Xmx512M"
 SEARCH_DB_HOST="totoro.localdomain"
 SEARCH_DB_NAME="musicbrainz_db_20110516"
 SEARCH_DB_USER="musicbrainz_user"
@@ -13,9 +15,9 @@ SEARCH_CONFIG="$HOME/mb_search_server.conf"
 [ -e "$SEARCH_CONFIG" ] && . "$SEARCH_CONFIG"
 
 
-export JAVA_HOME=/usr/local/java
+export JAVA_HOME=$SEARCH_JAVA_HOME
 exec $JAVA_HOME/bin/java \
-	-Xmx512M \
+	$SEARCH_JAVA_OPTS_INDEXER \
 	-jar "$JAR" \
 	--db-host "$SEARCH_DB_HOST" \
 	--db-name "$SEARCH_DB_NAME" \
