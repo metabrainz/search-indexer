@@ -11,15 +11,22 @@ SEARCH_CONFIG="$HOME/mb_search_server.conf"
 [ -e "$SEARCH_CONFIG" ] && . "$SEARCH_CONFIG"
 
 if [ -z "$SSH_ORIGINAL_COMMAND" ]; then
+	COMMAND=$1
+else
+	COMMAND=$SSH_ORIGINAL_COMMAND
+fi
+
+if [ -z "$COMMAND" ]; then
 	echo "Usage: $0 prepare|sync|rotate|restart" >&2
-	set|grep '^SEARCH_'
+	echo "SSH_ORIGINAL_COMMAND=$SSH_ORIGINAL_COMMAND" >&2
+	set|grep '^SEARCH_' >&2
 	exit 1
 fi
 
 
 cd $SEARCH_HOME || exit 1
 
-case "$SSH_ORIGINAL_COMMAND" in
+case "$COMMAND" in
     "prepare")
 		rm -rf data/new/*
 		;;
@@ -42,7 +49,7 @@ case "$SSH_ORIGINAL_COMMAND" in
 		;;
 	*)
 		echo "Unrecognised command for $0" >&2
-		echo "The command was: $SSH_ORIGINAL_COMMAND" >&2
+		echo "The command was: $COMMAND" >&2
 		exit 1
 		;;
 esac
