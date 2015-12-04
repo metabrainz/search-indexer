@@ -4,7 +4,7 @@ set -e
 
 SEARCH_HOME=/home/search
 
-SEARCH_CONFIG="$HOME/.sync-search-servers.conf"
+SEARCH_CONFIG="$HOME/mb_search_server.conf"
 [ -e "$SEARCH_CONFIG" ] && . "$SEARCH_CONFIG"
 
 [ ! -e "$SEARCH_HOME/tmp" ] && mkdir -p "$SEARCH_HOME/tmp"

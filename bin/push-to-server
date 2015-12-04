@@ -8,7 +8,7 @@ SEARCH_SSH_ID="$SEARCH_HOME/.ssh/push-to-server_id"
 SEARCH_SSH_OPTS="-o IdentitiesOnly=yes"
 
 # optionally, read from a config file, as env vars cannot easily be passed via ssh authorized_keys command
-SEARCH_CONFIG="$HOME/.sync-search-servers.conf"
+SEARCH_CONFIG="$HOME/mb_search_server.conf"
 [ -e "$SEARCH_CONFIG" ] && . "$SEARCH_CONFIG"
 
 HOST="$1"

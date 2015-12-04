@@ -9,7 +9,7 @@ SEARCH_DB_USER="musicbrainz_user"
 #FIXME: passing password on a command-line is not secure
 SEARCH_DB_PASSWORD="musicbrainz"
 
-SEARCH_CONFIG="$HOME/.sync-search-servers.conf"
+SEARCH_CONFIG="$HOME/mb_search_server.conf"
 [ -e "$SEARCH_CONFIG" ] && . "$SEARCH_CONFIG"
 
 

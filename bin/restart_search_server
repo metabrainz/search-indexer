@@ -3,7 +3,7 @@
 SEARCH_RESTART_COMMAND='kill-java'
 SEARCH_RESTART_DELAY=15
 
-SEARCH_CONFIG="$HOME/.sync-search-servers.conf"
+SEARCH_CONFIG="$HOME/mb_search_server.conf"
 [ -e "$SEARCH_CONFIG" ] && . "$SEARCH_CONFIG"
 
 case "$SEARCH_RESTART_COMMAND" in

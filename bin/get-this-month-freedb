@@ -8,7 +8,7 @@ SEARCH_FREEDB_URL=http://ftp.freedb.org/pub/freedb
 # At current file sizes, this --limit-rate means a download time of about six hours
 SEARCH_FREEDB_LIMIT_RATE=30000
 
-SEARCH_CONFIG="$HOME/.sync-search-servers.conf"
+SEARCH_CONFIG="$HOME/mb_search_server.conf"
 [ -e "$SEARCH_CONFIG" ] && . "$SEARCH_CONFIG"
 
 FREEDB_DATA_DIR="$SEARCH_HOME/freedb-data"
