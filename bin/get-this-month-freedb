@@ -23,7 +23,7 @@ then
 	FREEDB_DATA_TMPDIR="$FREEDB_DATA_DIR/tmp"
 	[ ! -e  "$FREEDB_DATA_TMPDIR" ] && mkdir -p "$FREEDB_DATA_TMPDIR"
 	q="-q" ; if [ -t 1 ] ; then q="" ; fi
-	wget $q --limit-rate=$SEARCH_FREEDB_LIMIT_RATE -N --continue -O "$FREEDB_DATA_TMPDIR/$FILE" $URL && mv -v "$FREEDB_DATA_TMPDIR/$FILE" ./
+	wget $q --limit-rate=$SEARCH_FREEDB_LIMIT_RATE --continue -O "$FREEDB_DATA_TMPDIR/$FILE" $URL && mv -v "$FREEDB_DATA_TMPDIR/$FILE" ./
 fi
 
 LATEST=`ls -1tr freedb-complete-[0-9]*.tar.bz2 | tail -1`
