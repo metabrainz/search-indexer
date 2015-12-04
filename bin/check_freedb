@@ -1,8 +1,11 @@
 #!/bin/sh
 
-if [ -z "$SEARCH_HOME" ]; then
-	SEARCH_HOME=/home/search
-fi
+set -e
 
-cd $SEARCH_HOME || exit 1
-exec ./bin/check_last_modified ./freedb-data/freedb-complete-latest.tar.bz2 35 40
+SEARCH_HOME=/home/search
+
+SEARCH_CONFIG="$HOME/.sync-search-servers.conf"
+[ -e "$SEARCH_CONFIG" ] && . "$SEARCH_CONFIG"
+
+[ ! -e "$SEARCH_HOME/freedb-data" ] && exit 1
+exec $SEARCH_HOME/bin/check_last_modified $SEARCH_HOME/freedb-data/freedb-complete-latest.tar.bz2 35 40
