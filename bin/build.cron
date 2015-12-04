@@ -1,2 +1,12 @@
 #!/bin/sh
-exec runexclusive -f ~/tmp/build.lock --no-wait -t 36000 build
+
+set -e
+
+SEARCH_HOME=/home/search
+
+SEARCH_CONFIG="$HOME/.sync-search-servers.conf"
+[ -e "$SEARCH_CONFIG" ] && . "$SEARCH_CONFIG"
+
+[ ! -e "$SEARCH_HOME/tmp" ] && mkdir -p "$SEARCH_HOME/tmp"
+
+exec runexclusive -f "$SEARCH_HOME/tmp/build.lock" --no-wait -t 36000 "$SEARCH_HOME/bin/build"
