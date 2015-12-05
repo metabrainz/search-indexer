@@ -40,6 +40,9 @@ HOUR=`date +%H`
 REC_ELAPSED=`expr $NOW - $REC_LAST_BUILD`
 FREEDB_ELAPSED=`expr $NOW - $FREEDB_LAST_BUILD`
 
+# if cur isn't a symlink, we run once to prepare the dirs and links
+[ ! -L data/cur ] && (cd data && $SEARCH_HOME/bin/safe_dir_rotation)
+
 echo "Clean up old files"
 ! rm -rf data/new/*
 
