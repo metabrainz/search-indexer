@@ -1,0 +1,49 @@
+#!/bin/bash
+
+# inititalization
+
+# make 3 dirs named 0 1 2
+for d in 0 1 2; do
+	[ ! -d $d ] && mkdir $d
+done
+
+# ensure there are no file or dir named cur/new/old, backup them else
+for l in cur old new; do
+	[ ! -e $l ] && continue
+	[ ! -L $l ] && mv -fv $l $l.$$
+done
+
+# make 3 symlinks old cur new pointing to 0 1 2
+if [ ! -e cur ]; then
+	ln -sfn 0 cur
+fi
+
+CUR=$(readlink cur)
+NEW=$((CUR+1))
+NEW=$((NEW%3))
+if [ "x$(readlink new)" != "x$NEW" ]; then
+	ln -sfn $NEW new
+fi
+
+NEW=$(readlink new)
+OLD=$((NEW+1))
+OLD=$((OLD%3))
+if [ "x$(readlink old)" != "x$OLD" ]; then
+	ln -sfn $OLD old
+fi
+
+CUR=$(readlink cur);
+OLD=$(readlink old);
+
+# atomic rename
+mv -Tf new cur;
+
+# re-link
+ln -sfn $OLD new;
+ln -sfn $CUR old;
+
+# clean up new
+rm -rf new/*;
+
+# log state
+ls -1ld 0 1 2 cur new old
