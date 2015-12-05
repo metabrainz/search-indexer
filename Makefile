@@ -21,7 +21,7 @@ recording:
 	$(MAKE) index TYPE=recording
 
 freedb:
-	env JAR=$(JAR) builder --indexes-dir ./data/cur --freedb-dump freedb-data/freedb-complete-latest.tar.bz2 --indexes freedb
+	env JAR=$(JAR) builder --indexes-dir ./data/new --freedb-dump freedb-data/freedb-complete-latest.tar.bz2 --indexes freedb
 
 index:
-	env JAR=$(JAR) builder --indexes-dir ./data/cur --indexes $(TYPE)
+	env JAR=$(JAR) builder --indexes-dir ./data/new --indexes $(TYPE)
