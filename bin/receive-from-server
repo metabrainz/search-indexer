@@ -26,6 +26,9 @@ fi
 
 cd $SEARCH_HOME || exit 1
 
+# if cur isn't a symlink, we run once to prepare the dirs and links
+[ ! -L data/cur ] && (cd data && $SEARCH_HOME/bin/safe_dir_rotation)
+
 case "$COMMAND" in
     "prepare")
 		rm -rf data/new/*
@@ -34,9 +37,7 @@ case "$COMMAND" in
         nc -dl $SEARCH_SYNC_PORT | tar -x -C data/new
         ;;
 	"rotate")
-		cd data
-		[ -d new ] && $SEARCH_HOME/bin/smart-rotate.py cur new old
-		cd -
+		(cd data && $SEARCH_HOME/bin/safe_dir_rotation)
 		;;
     "restart")
         # Shoot first, let god sort them out
