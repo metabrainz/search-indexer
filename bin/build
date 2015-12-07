@@ -21,24 +21,26 @@ SEARCH_CONFIG="$HOME/mb_search_server.conf"
 echo "SEARCH_HOME=$SEARCH_HOME SEARCH_PUSH_TO=$SEARCH_PUSH_TO"
 cd $SEARCH_HOME || exit 1
 
-REC_TIMESTAMP_FILE="$SEARCH_HOME/recording_build_timestamp"
-
-FREEDB_TIMESTAMP_FILE="$SEARCH_HOME/freedb_build_timestamp"
-
-if [ ! -f $FREEDB_TIMESTAMP_FILE ]; then
-	date +%s > $FREEDB_TIMESTAMP_FILE
-fi
-if [ ! -f $REC_TIMESTAMP_FILE ]; then
-	date +%s > $REC_TIMESTAMP_FILE
-fi
-
-REC_LAST_BUILD=`cat $REC_TIMESTAMP_FILE`
-FREEDB_LAST_BUILD=`cat $FREEDB_TIMESTAMP_FILE`
 NOW=`date +%s`
 DAY=`date +%d`
 HOUR=`date +%H`
+
+
+REC_TIMESTAMP_FILE="$SEARCH_HOME/recording_build_timestamp"
+if [ ! -f $REC_TIMESTAMP_FILE ]; then
+	echo $(($NOW - $SEARCH_REC_THRESHOLD)) > $REC_TIMESTAMP_FILE
+fi
+REC_LAST_BUILD=`cat $REC_TIMESTAMP_FILE`
 REC_ELAPSED=`expr $NOW - $REC_LAST_BUILD`
+
+
+FREEDB_TIMESTAMP_FILE="$SEARCH_HOME/freedb_build_timestamp"
+if [ ! -f $FREEDB_TIMESTAMP_FILE ]; then
+	echo $(($NOW - $SEARCH_FREEDB_THRESHOLD)) > $FREEDB_TIMESTAMP_FILE
+fi
+FREEDB_LAST_BUILD=`cat $FREEDB_TIMESTAMP_FILE`
 FREEDB_ELAPSED=`expr $NOW - $FREEDB_LAST_BUILD`
+
 
 # if cur isn't a symlink, we run once to prepare the dirs and links
 [ ! -L data/cur ] && (cd data && $SEARCH_HOME/bin/safe_dir_rotation)
