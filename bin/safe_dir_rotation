@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# inititalization
+# initialization
 
 # make 3 dirs named 0 1 2
 for d in 0 1 2; do
@@ -34,6 +34,29 @@ fi
 
 CUR=$(readlink cur);
 OLD=$(readlink old);
+
+copy_cur_new() {
+	INDEXDIR=$1
+	SOURCE=cur/$INDEXDIR
+	if [ ! -d $SOURCE ]; then
+		echo "No such $SOURCE, cannot copy"
+		return 1
+	fi
+	DEST=new/$INDEXDIR
+	if [ -d $DEST ]; then
+		echo "$DEST already exists, skipping copy"
+		return 1
+	fi
+	echo "Copy cur/$INDEXDIR to new/$INDEXDIR, hardlinking"
+	cp -rl $SOURCE $DEST
+	return 0
+}
+
+for INDEX in freedb_index recording_index; do
+	copy_cur_new $INDEX
+done
+
+echo "Rotating new -> cur -> old"
 
 # atomic rename
 mv -Tf new cur;

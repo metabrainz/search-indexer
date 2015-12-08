@@ -69,23 +69,6 @@ if [ ! -e "$READYFILE" ]; then
 		fi
 	}
 
-	copy_cur_new() {
-		INDEXDIR=$1
-		SOURCE=$SEARCH_HOME/data/cur/$INDEXDIR
-		if [ ! -d $SOURCE ]; then
-			echo "No such $SOURCE, cannot copy"
-			return 1
-		fi
-		DEST=$SEARCH_HOME/data/new/$INDEXDIR
-		if [ -d $DEST ]; then
-			echo "$DEST already exists, skipping copy"
-			return 1
-		fi
-		echo "Copy cur/$INDEXDIR to new/$INDEXDIR, hardlinking"
-		cp -rl $SOURCE $DEST
-		return 0
-	}
-
 	build_freedb_index() {
 		if [ -f "$FREEDB_BUILD_FORCE" ]; then
 			echo "Building freedb index (forced)"
@@ -112,9 +95,6 @@ if [ ! -e "$READYFILE" ]; then
 		START=$(date +%s)
 		run_and_show_errors make freedb || exit 2
 		echo "$START" > $FREEDB_TIMESTAMP_FILE
-	else
-		# since we don't regenerate this index, copy over the old one
-		copy_cur_new "freedb_index"
 	fi
 
 	build_recording_index() {
@@ -139,8 +119,6 @@ if [ ! -e "$READYFILE" ]; then
 		START=$(date +%s)
 		run_and_show_errors make recording || exit 2
 		echo "$START" > $REC_TIMESTAMP_FILE
-	else
-		copy_cur_new "recording_index"
 	fi
 
 	run_and_show_errors make || exit 2
