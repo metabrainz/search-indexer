@@ -161,7 +161,7 @@ if [ ! -z "$SEARCH_PUSH_TO" ]; then
 fi
 
 # if the indexer server is also a search server
-if [ -e "$SEARCH/is_search_server" ]; then
+if [ -e "$SEARCH_HOME/is_search_server" ]; then
 	echo "Restarting local search server"
 	$SEARCH_HOME/bin/restart_search_server
 fi
