@@ -49,7 +49,7 @@ copy_cur_new() {
 	fi
 	echo "Copy cur/$INDEXDIR to new/$INDEXDIR, hardlinking"
 	cp -rl $SOURCE $DEST
-	return 0
+	return $?
 }
 
 for INDEX in $(find cur/ -mindepth 1 -maxdepth 1 -type d -exec basename "{}" \;); do
