@@ -18,19 +18,26 @@ port = sys.argv[2]
 
 random.seed()
 
+debug = 0
+
 iteration = 0
-while True:
-    query = wordlist[random.randint(0, len(wordlist))]
-    query += "+"
-    query += wordlist[random.randint(0, len(wordlist))]
+maxtime = 60
+lastword = len(wordlist) - 1
+start = time.time()
+while maxtime > 0 and (time.time() - start) < maxtime:
+    query = "+".join([wordlist[random.randint(0, lastword)] for i in
+                      range(0,random.randint(1, 4))])
     print "iteration %d, query: %s" % (iteration, query)
-    for index in indexes:
+    for index in indexes[:1]:
         while True:
             try:
                 t0 = time.time()
                 url = 'http://%s:%s/?type=%s&query=%s' % (host, port, index, query)
-                response = urllib2.urlopen(url)
-                html = response.read()
+                if not debug:
+                    response = urllib2.urlopen(url)
+                    html = response.read()
+                else:
+                     print url
                 t1 = time.time()
             except urllib2.HTTPError as e:
                 print "Error %d on %s: %s" % (e.code, index, e)
@@ -40,4 +47,3 @@ while True:
             break
 
     iteration += 1
-
