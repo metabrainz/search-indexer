@@ -45,6 +45,9 @@ FREEDB_BUILD_FORCE="$STATUSDIR/force_freedb"
 # existence of this file will pause the indexer
 PAUSE_INDEXER_FILE="$STATUSDIR/pause"
 
+# existence of this file will disable any push
+NO_PUSH_FILE="$STATUSDIR/no_push"
+
 # this file is created at the end of index generation and remove after pushs
 # indexer will not restart while it exists
 READYFILE="$SEARCH_HOME/data/cur/UPDATE_READY"
@@ -160,27 +163,31 @@ else
 	echo "Skipping build indexes because $READYFILE exists."
 fi
 
-if [ ! -z "$SEARCH_PUSH_TO" ]; then
-	echo "Pushing to remote search servers"
-	for SERVER in $SEARCH_PUSH_TO
-	do
-		# append localdomain if server name has no dot
-		echo -n "$SERVER" |grep -qF '.' || SERVER=${SERVER}.localdomain
-		run_and_show_errors push-to-server $SERVER sync
-		if [ $? = 0 ]; then
-			run_and_show_errors push-to-server $SERVER rotate
+if [ ! -e "$NO_PUSH_FILE" ]; then
+	if [ ! -z "$SEARCH_PUSH_TO" ]; then
+		echo "Pushing to remote search servers"
+		for SERVER in $SEARCH_PUSH_TO
+		do
+			# append localdomain if server name has no dot
+			echo -n "$SERVER" |grep -qF '.' || SERVER=${SERVER}.localdomain
+			run_and_show_errors push-to-server $SERVER sync
 			if [ $? = 0 ]; then
-				run_and_show_errors push-to-server $SERVER restart \
-				&& sleep $SEARCH_PUSH_TO_DELAY
+				run_and_show_errors push-to-server $SERVER rotate
+				if [ $? = 0 ]; then
+					run_and_show_errors push-to-server $SERVER restart \
+					&& sleep $SEARCH_PUSH_TO_DELAY
+				fi
 			fi
-		fi
-	done
-fi
+		done
+	fi
 
-# if the indexer server is also a search server
-if [ -e "$SEARCH_HOME/is_search_server" ]; then
-	echo "Restarting local search server"
-	$SEARCH_HOME/bin/restart_search_server
+	# if the indexer server is also a search server
+	if [ -e "$SEARCH_HOME/is_search_server" ]; then
+		echo "Restarting local search server"
+		$SEARCH_HOME/bin/restart_search_server
+	fi
+else
+	echo "Push disabled ($NO_PUSH_FILE exists)"
 fi
 
 rm -f $READYFILE || echo "Failed to remove $READYFILE"
