@@ -29,6 +29,7 @@ while maxtime > 0 and (time.time() - start) < maxtime:
                       range(0,random.randint(1, 4))])
     print "iteration %d, query: %s" % (iteration, query)
     for index in indexes[:1]:
+        maxhttperrors = 20
         while True:
             try:
                 t0 = time.time()
@@ -41,7 +42,9 @@ while maxtime > 0 and (time.time() - start) < maxtime:
                 t1 = time.time()
             except urllib2.HTTPError as e:
                 print "Error %d on %s: %s" % (e.code, index, e)
-                continue
+                maxhttperrors -= 1
+                if maxhttperrors > 0:
+                    continue
 
             print "   %.3fs: %s" % (t1 - t0, index)
             break
