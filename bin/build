@@ -53,7 +53,8 @@ PAUSE_INDEXER_FILE="$SEARCH_HOME/pause_indexer"
 PAUSE_INDEXER_SLEEP=60
 
 if [ -e "$PAUSE_INDEXER_FILE" ]; then
-	echo "Indexer set to pause ($PAUSE_INDEXER_FILE exists), sleeping $PAUSE_INDEXER_SLEEP before trying again."
+	echo "Indexer PAUSED ($PAUSE_INDEXER_FILE exists)."
+	echo "Sleeping $PAUSE_INDEXER_SLEEP seconds before next check."
 	sleep $PAUSE_INDEXER_SLEEP
 	exit 0
 fi
