@@ -52,7 +52,7 @@ copy_cur_new() {
 	return 0
 }
 
-for INDEX in freedb_index recording_index; do
+for INDEX in $(find cur/ -mindepth 1 -maxdepth 1 -type d -exec basename "{}" \;); do
 	copy_cur_new $INDEX
 done
 
