@@ -61,6 +61,7 @@ while duration > 0 and (time.time() - start) < duration:
 
     iteration += 1
 
-print "Number of queries: %d, mean time: %0.3fs" % (number_of_queries,
-                                                   (time.time() -
-                                                    start)/number_of_queries)
+total_time = (time.time() - start)
+mean = total_time / number_of_queries
+queries_per_sec = number_of_queries / total_time
+print "Number of queries: %d, mean time: %0.3fs queries/s: %0.1f" % (number_of_queries, mean, queries_per_sec)
