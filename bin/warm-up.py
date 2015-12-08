@@ -36,8 +36,8 @@ while duration > 0 and (time.time() - start) < duration:
     for index in indexes:
         maxhttperrors = 20
         while True:
+            t1 = t0 = time.time()
             try:
-                t0 = time.time()
                 params = {
                     'type': index,
                     'query': words
