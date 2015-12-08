@@ -3,7 +3,8 @@ set -e
 
 SEARCH_HOME=/home/search
 SEARCH_SYNC_PORT=7000
-SEARCH_SERVLET_URL="http://localhost:8080"
+SEARCH_SERVLET_URL="http://localhost"
+SEARCH_SERVLET_PORT="8080"
 SEARCH_SERVLET_RATE="true"
 
 # optionally, read from a config file, as env vars cannot easily be passed via ssh authorized_keys command
@@ -45,7 +46,7 @@ case "$COMMAND" in
 
         # This enables the rate limiting for the search server
 		if [ ! -z "$SEARCH_SERVLET_URL" ]; then
-			wget -O /dev/null "$SEARCH_SERVLET_URL/?rate=$SEARCH_SERVLET_RATE"
+			wget -O /dev/null "$SEARCH_SERVLET_URL:$SEARCH_SERVLET_PORT/?rate=$SEARCH_SERVLET_RATE"
 		fi
 		;;
 	*)
