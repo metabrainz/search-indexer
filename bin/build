@@ -15,6 +15,8 @@ SEARCH_FREEDB_HOUR=4
 SEARCH_FREEDB_MAX_HOUR=12
 SEARCH_FREEDB_THRESHOLD=86400 # 24 hours
 
+SEARCH_INDEXER_PAUSE_DELAY=60
+
 SEARCH_CONFIG="$HOME/mb_search_server.conf"
 [ -e "$SEARCH_CONFIG" ] && . "$SEARCH_CONFIG"
 
@@ -49,13 +51,13 @@ FREEDB_BUILD_FORCE="$SEARCH_HOME/freedb_build_force"
 # if cur isn't a symlink, we run once to prepare the dirs and links
 [ ! -L data/cur ] && (cd data && $SEARCH_HOME/bin/safe_dir_rotation)
 
+# existence of this file will pause the indexer
 PAUSE_INDEXER_FILE="$SEARCH_HOME/pause_indexer"
-PAUSE_INDEXER_SLEEP=60
 
 if [ -e "$PAUSE_INDEXER_FILE" ]; then
 	echo "Indexer PAUSED ($PAUSE_INDEXER_FILE exists)."
-	echo "Sleeping $PAUSE_INDEXER_SLEEP seconds before next check."
-	sleep $PAUSE_INDEXER_SLEEP
+	echo "Sleeping $SEARCH_INDEXER_PAUSE_DELAY seconds before next check."
+	sleep $SEARCH_INDEXER_PAUSE_DELAY
 	exit 0
 fi
 
