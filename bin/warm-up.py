@@ -21,6 +21,7 @@ random.seed()
 
 debug = 0
 
+number_of_queries = 0
 iteration = 0
 maxtime = 60
 lastword = len(wordlist) - 1
@@ -42,6 +43,7 @@ while maxtime > 0 and (time.time() - start) < maxtime:
                 if not debug:
                     response = urllib2.urlopen(url)
                     html = response.read()
+                    number_of_queries += 1
                 else:
                      print url
                 t1 = time.time()
@@ -55,3 +57,7 @@ while maxtime > 0 and (time.time() - start) < maxtime:
             break
 
     iteration += 1
+
+print "Number of queries: %d, mean time: %0.3fs" % (number_of_queries,
+                                                   (time.time() -
+                                                    start)/number_of_queries)
