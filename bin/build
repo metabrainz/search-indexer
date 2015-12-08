@@ -32,7 +32,9 @@ if [ ! -f $REC_TIMESTAMP_FILE ]; then
 fi
 REC_LAST_BUILD=`cat $REC_TIMESTAMP_FILE`
 REC_ELAPSED=`expr $NOW - $REC_LAST_BUILD`
-
+# when this file exists, recording index will be built, without other conditions,
+# the file will be removed when it starts
+REC_BUILD_FORCE="$SEARCH_HOME/recording_build_force"
 
 FREEDB_TIMESTAMP_FILE="$SEARCH_HOME/freedb_build_timestamp"
 if [ ! -f $FREEDB_TIMESTAMP_FILE ]; then
@@ -40,7 +42,9 @@ if [ ! -f $FREEDB_TIMESTAMP_FILE ]; then
 fi
 FREEDB_LAST_BUILD=`cat $FREEDB_TIMESTAMP_FILE`
 FREEDB_ELAPSED=`expr $NOW - $FREEDB_LAST_BUILD`
-
+# when this file exists, freedb index will be built, without other conditions,
+# the file will be removed when it starts
+FREEDB_BUILD_FORCE="$SEARCH_HOME/freedb_build_force"
 
 # if cur isn't a symlink, we run once to prepare the dirs and links
 [ ! -L data/cur ] && (cd data && $SEARCH_HOME/bin/safe_dir_rotation)
@@ -61,25 +65,53 @@ run_and_show_errors() {
 	fi
 }
 
-if [ "$FREEDB_ELAPSED" -lt "$SEARCH_FREEDB_THRESHOLD" ]; then
-	echo "Not building freedb index ($FREEDB_ELAPSED of $SEARCH_FREEDB_THRESHOLD seconds since last freedb build)."
-elif [ "$DAY" -ne "$SEARCH_FREEDB_DAY" ]; then
-	echo "Not building freedb index (only on day $SEARCH_FREEDB_DAY)."
-elif [ "$HOUR" -lt "$SEARCH_FREEDB_HOUR" ] || [ "$HOUR" -gt "$SEARCH_FREEDB_MAX_HOUR" ]; then
-    echo "Not building freedb index (only between $SEARCH_FREEDB_HOUR and $SEARCH_FREEDB_MAX_HOUR hours)."
-else
+build_freedb_index() {
+	if [ -f "$FREEDB_BUILD_FORCE" ]; then
+		echo "Building freedb index (forced)"
+		rm -f "$FREEDB_BUILD_FORCE"
+		return 0
+	fi
+	if [ "$FREEDB_ELAPSED" -lt "$SEARCH_FREEDB_THRESHOLD" ]; then
+		echo "Not building freedb index ($FREEDB_ELAPSED of $SEARCH_FREEDB_THRESHOLD seconds since last freedb build)."
+		return 1
+	fi
+	if [ "$DAY" -ne "$SEARCH_FREEDB_DAY" ]; then
+		echo "Not building freedb index (only on day $SEARCH_FREEDB_DAY)."
+		return 1
+	fi
+	if [ "$HOUR" -lt "$SEARCH_FREEDB_HOUR" ] || [ "$HOUR" -gt "$SEARCH_FREEDB_MAX_HOUR" ]; then
+		echo "Not building freedb index (only between $SEARCH_FREEDB_HOUR and $SEARCH_FREEDB_MAX_HOUR hours)."
+		return 1
+	fi
 	echo "Building freedb index. Last index was started $FREEDB_ELAPSED seconds ago"
+	return 0
+}
+
+if build_freedb_index; then
 	START=$(date +%s)
 	run_and_show_errors make freedb || exit 2
 	echo "$START" > $FREEDB_TIMESTAMP_FILE
 fi
 
-if [ "$REC_ELAPSED" -lt "$SEARCH_REC_THRESHOLD" ]; then
-	echo "Not building recording index ($REC_ELAPSED of $SEARCH_REC_THRESHOLD seconds since last recording build)."
-elif [ "$HOUR" -lt "$SEARCH_REC_HOUR" ] || [ "$HOUR" -gt "$SEARCH_REC_MAX_HOUR" ]; then
-	echo "Not building recording index (only between $SEARCH_REC_HOUR and $SEARCH_REC_MAX_HOUR hours)."
-else
+build_recording_index() {
+	if [ -f "$REC_BUILD_FORCE" ]; then
+		echo "Building recording index (forced)"
+		rm -f "$REC_BUILD_FORCE"
+		return 0
+	fi
+	if [ "$REC_ELAPSED" -lt "$SEARCH_REC_THRESHOLD" ]; then
+		echo "Not building recording index ($REC_ELAPSED of $SEARCH_REC_THRESHOLD seconds since last recording build)."
+		return 1
+	fi
+	if [ "$HOUR" -lt "$SEARCH_REC_HOUR" ] || [ "$HOUR" -gt "$SEARCH_REC_MAX_HOUR" ]; then
+		echo "Not building recording index (only between $SEARCH_REC_HOUR and $SEARCH_REC_MAX_HOUR hours)."
+		return 1
+	fi
 	echo "Building recording index. Last index was started $REC_ELAPSED seconds ago"
+	return 0
+}
+
+if build_recording_index; then
 	START=$(date +%s)
 	run_and_show_errors make recording || exit 2
 	echo "$START" > $REC_TIMESTAMP_FILE
