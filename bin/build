@@ -49,6 +49,15 @@ FREEDB_BUILD_FORCE="$SEARCH_HOME/freedb_build_force"
 # if cur isn't a symlink, we run once to prepare the dirs and links
 [ ! -L data/cur ] && (cd data && $SEARCH_HOME/bin/safe_dir_rotation)
 
+PAUSE_INDEXER_FILE="$SEARCH_HOME/pause_indexer"
+PAUSE_INDEXER_SLEEP=60
+
+if [ -e "$PAUSE_INDEXER_FILE" ]; then
+	echo "Indexer set to pause ($PAUSE_INDEXER_FILE exists), sleeping $PAUSE_INDEXER_SLEEP before trying again."
+	sleep $PAUSE_INDEXER_SLEEP
+	exit 0
+fi
+
 READYFILE="$SEARCH_HOME/data/cur/UPDATE_READY"
 
 if [ ! -e "$READYFILE" ]; then
@@ -133,9 +142,10 @@ fi
 
 if [ ! -z "$SEARCH_PUSH_TO" ]; then
 	echo "Pushing to remote search servers"
-	for h in $SEARCH_PUSH_TO
+	for SERVER in $SEARCH_PUSH_TO
 	do
-		SERVER="$h.localdomain"
+		# append localdomain if server name has no dot
+		echo -n "$SERVER" |grep -qF '.' || SERVER=${SERVER}.localdomain
 		run_and_show_errors push-to-server $SERVER sync
 		if [ $? = 0 ]; then
 			run_and_show_errors push-to-server $SERVER rotate
