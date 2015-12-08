@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import urllib
 import urllib2
 import sys
 import time
@@ -25,15 +26,19 @@ maxtime = 60
 lastword = len(wordlist) - 1
 start = time.time()
 while maxtime > 0 and (time.time() - start) < maxtime:
-    query = "+".join([wordlist[random.randint(0, lastword)] for i in
+    words = " ".join([wordlist[random.randint(0, lastword)] for i in
                       range(0,random.randint(1, 4))])
-    print "iteration %d, query: %s" % (iteration, query)
+    print "iteration %d, query: '%s'" % (iteration, words)
     for index in indexes:
         maxhttperrors = 20
         while True:
             try:
                 t0 = time.time()
-                url = 'http://%s:%s/?type=%s&query=%s' % (host, port, index, query)
+                params = {
+                    'type': index,
+                    'query': words
+                }
+                url = 'http://%s:%s/?%s' % (host, port, urllib.urlencode(params))
                 if not debug:
                     response = urllib2.urlopen(url)
                     html = response.read()
