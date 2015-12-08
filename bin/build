@@ -27,32 +27,36 @@ NOW=`date +%s`
 DAY=`date +%d`
 HOUR=`date +%H`
 
+STATUSDIR="$SEARCH_HOME/indexer"
+[ ! -d "$STATUSDIR" ] && mkdir -p "$STATUSDIR"
 
-REC_TIMESTAMP_FILE="$SEARCH_HOME/recording_build_timestamp"
-if [ ! -f $REC_TIMESTAMP_FILE ]; then
-	echo $(($NOW - $SEARCH_REC_THRESHOLD)) > $REC_TIMESTAMP_FILE
-fi
-REC_LAST_BUILD=`cat $REC_TIMESTAMP_FILE`
-REC_ELAPSED=`expr $NOW - $REC_LAST_BUILD`
-# when this file exists, recording index will be built, without other conditions,
-# the file will be removed when it starts
-REC_BUILD_FORCE="$SEARCH_HOME/recording_build_force"
+# store time of last updates
+REC_TIMESTAMP_FILE="$STATUSDIR/.recording_build_timestamp"
+FREEDB_TIMESTAMP_FILE="$STATUSDIR/.freedb_build_timestamp"
 
-FREEDB_TIMESTAMP_FILE="$SEARCH_HOME/freedb_build_timestamp"
-if [ ! -f $FREEDB_TIMESTAMP_FILE ]; then
-	echo $(($NOW - $SEARCH_FREEDB_THRESHOLD)) > $FREEDB_TIMESTAMP_FILE
-fi
-FREEDB_LAST_BUILD=`cat $FREEDB_TIMESTAMP_FILE`
-FREEDB_ELAPSED=`expr $NOW - $FREEDB_LAST_BUILD`
 # when this file exists, freedb index will be built, without other conditions,
 # the file will be removed when it starts
-FREEDB_BUILD_FORCE="$SEARCH_HOME/freedb_build_force"
+REC_BUILD_FORCE="$STATUSDIR/force_recording"
 
-# if cur isn't a symlink, we run once to prepare the dirs and links
-[ ! -L data/cur ] && (cd data && $SEARCH_HOME/bin/safe_dir_rotation)
+# when this file exists, freedb index will be built, without other conditions,
+# the file will be removed when it starts
+FREEDB_BUILD_FORCE="$STATUSDIR/force_freedb"
 
 # existence of this file will pause the indexer
-PAUSE_INDEXER_FILE="$SEARCH_HOME/pause_indexer"
+PAUSE_INDEXER_FILE="$STATUSDIR/pause"
+
+# this file is created at the end of index generation and remove after pushs
+# indexer will not restart while it exists
+READYFILE="$SEARCH_HOME/data/cur/UPDATE_READY"
+
+# compatibility with older versions
+for FILE in recording_build_timestamp freedb_build_timestamp; do
+	[ -e "$STATUSDIR/.$FILE" ] && continue
+	if [ -e "$SEARCH_HOME/$FILE" ]; then
+		mv -v "$SEARCH_HOME/$FILE" "$STATUSDIR/.$FILE"
+	fi
+done
+
 
 if [ -e "$PAUSE_INDEXER_FILE" ]; then
 	echo "Indexer PAUSED ($PAUSE_INDEXER_FILE exists)."
@@ -61,7 +65,20 @@ if [ -e "$PAUSE_INDEXER_FILE" ]; then
 	exit 0
 fi
 
-READYFILE="$SEARCH_HOME/data/cur/UPDATE_READY"
+if [ ! -f $REC_TIMESTAMP_FILE ]; then
+	echo $(($NOW - $SEARCH_REC_THRESHOLD)) > $REC_TIMESTAMP_FILE
+fi
+REC_LAST_BUILD=`cat $REC_TIMESTAMP_FILE`
+REC_ELAPSED=`expr $NOW - $REC_LAST_BUILD`
+
+if [ ! -f $FREEDB_TIMESTAMP_FILE ]; then
+	echo $(($NOW - $SEARCH_FREEDB_THRESHOLD)) > $FREEDB_TIMESTAMP_FILE
+fi
+FREEDB_LAST_BUILD=`cat $FREEDB_TIMESTAMP_FILE`
+FREEDB_ELAPSED=`expr $NOW - $FREEDB_LAST_BUILD`
+
+# if cur isn't a symlink, we run once to prepare the dirs and links
+[ ! -L data/cur ] && (cd data && $SEARCH_HOME/bin/safe_dir_rotation)
 
 if [ ! -e "$READYFILE" ]; then
 
