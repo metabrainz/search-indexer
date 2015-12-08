@@ -28,7 +28,7 @@ while maxtime > 0 and (time.time() - start) < maxtime:
     query = "+".join([wordlist[random.randint(0, lastword)] for i in
                       range(0,random.randint(1, 4))])
     print "iteration %d, query: %s" % (iteration, query)
-    for index in indexes[:1]:
+    for index in indexes:
         maxhttperrors = 20
         while True:
             try:
