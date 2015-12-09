@@ -177,7 +177,9 @@ if [ ! -e "$NO_PUSH_FILE" ]; then
 					run_and_show_errors push-to-server $SERVER restart
 				fi
 			fi
+			echo "Sleeping for $SEARCH_PUSH_TO_DELAY seconds..."
 			sleep $SEARCH_PUSH_TO_DELAY
+			echo "Continuing..."
 		done
 	fi
 
