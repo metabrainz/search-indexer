@@ -1,0 +1,16 @@
+#!/bin/bash
+
+SEARCH_HOME=/home/search
+SEARCH_SERVLET_URL="http://localhost"
+SEARCH_SERVLET_PORT="8080"
+
+# optionally, read from a config file, as env vars cannot easily be passed via ssh authorized_keys command
+SEARCH_CONFIG="$HOME/mb_search_server.conf"
+[ -e "$SEARCH_CONFIG" ] && . "$SEARCH_CONFIG"
+
+# check if host is set as search server
+[ ! -e $SEARCH_HOME/is_search_server ] && exit 1
+
+SERVER_HOST=$(echo -n "$SEARCH_SERVLET_URL"|sed 's#https?://##')
+
+$SEARCH_HOME/bin/warm-up.py $SERVER_HOST $SEARCH_SERVLET_PORT 60
