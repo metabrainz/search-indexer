@@ -174,7 +174,7 @@ if [ ! -e "$NO_PUSH_FILE" ]; then
 			if [ $? = 0 ]; then
 				run_and_show_errors push-to-server $SERVER rotate
 				if [ $? = 0 ]; then
-					run_and_show_errors push-to-server $SERVER restart \
+					run_and_show_errors push-to-server $SERVER restart
 				fi
 			fi
 			sleep $SEARCH_PUSH_TO_DELAY
