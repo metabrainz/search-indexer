@@ -36,10 +36,18 @@ case "$COMMAND" in
 		(cd $SEARCH_HOME/data/cur && tar cvO .) | nc $HOST $SEARCH_SYNC_PORT
 		;;
 	rotate)
-		$SSH $HOST rotate
+		if [ ! -e $SEARCH_HOME/indexer/no_rotate ]; then
+			$SSH $HOST rotate
+		else
+			echo "Rotate disabled ($SEARCH_HOME/indexer/no_rotate exists)"
+		fi
 		;;
 	restart)
-		$SSH $HOST restart
+		if [ ! -e $SEARCH_HOME/indexer/no_restart ]; then
+			$SSH $HOST restart
+		else
+			echo "Restart disabled ($SEARCH_HOME/indexer/no_restart exists)"
+		fi
 		;;
 	*)
 		echo "Unknown action '$COMMAND' in $0" >&2
