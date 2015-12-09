@@ -44,7 +44,11 @@ while duration > 0 and (time.time() - start) < duration:
                 }
                 url = 'http://%s:%s/?%s' % (host, port, urllib.urlencode(params))
                 if not debug:
-                    response = urllib2.urlopen(url)
+                    request = urllib2.Request(url)
+                    request.add_header('User-Agent', 'MB-warm-up/0.1')
+                    request.add_header("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0, post-check=0, pre-check=0");
+                    request.add_header("Pragma", "no-cache");
+                    response = urllib2.build_opener().open(request)
                     html = response.read()
                     number_of_queries += 1
                 else:
