@@ -11,6 +11,7 @@ SEARCH_CONFIG="$HOME/mb_search_server.conf"
 # check if host is set as search server
 [ ! -e $SEARCH_HOME/is_search_server ] && exit 1
 
-SERVER_HOST=$(echo -n "$SEARCH_SERVLET_URL"|sed 's#https?://##')
+SERVER_HOST=$(echo -n "$SEARCH_SERVLET_URL"|sed 's#https\?://##i')
 
+set -x
 $SEARCH_HOME/bin/warm-up.py $SERVER_HOST $SEARCH_SERVLET_PORT 60
