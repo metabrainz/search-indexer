@@ -6,21 +6,32 @@ SEARCH_RESTART_DELAY=15
 SEARCH_CONFIG="$HOME/mb_search_server.conf"
 [ -e "$SEARCH_CONFIG" ] && . "$SEARCH_CONFIG"
 
-case "$SEARCH_RESTART_COMMAND" in
-    "kill-java")
-		# kill them all and let god sort them out! Besides, fuck Java!
-		sudo killall -9 java && sleep $SEARCH_RESTART_DELAY
-		;;
-	"svc-jetty")
-		sudo svc -t /etc/service/jetty-service && sleep $SEARCH_RESTART_DELAY
-		;;
-	"svc-tomcat")
-		sudo svc -t /etc/service/tomcat-service && sleep $SEARCH_RESTART_DELAY
-		;;
-	*)
-		echo "Unrecognised command for $0" >&2
-		echo "The command was: $SEARCH_RESTART_COMMAND" >&2
-		echo "Known commands are: kill-java|svc-jetty|svc-tomcat" >&2
+do_restart() {
+	COMMAND="/usr/local/sbin/restart_search_server_$1"
+	[ ! -x "$COMMAND" ] && return 1
+	echo "Restarting search server using $SEARCH_RESTART_COMMAND method..."
+	sudo "$COMMAND" && sleep $SEARCH_RESTART_DELAY && echo "Done." && return 0
+	return 1
+}
+
+if [ "$SEARCH_RESTART_COMMAND" = "svc" ]; then
+	if [ -e "$SEARCH_HOME/is_search_server" ]; then
+		SERV=$(cat "$SEARCH_HOME/is_search_server")
+		do_restart "svc_$SERV" || exit 1
+		exit 0
+	else
+		echo "No $SEARCH_HOME/is_search_server file, cannot use svc method" >&2
 		exit 1
-		;;
-esac
+	fi
+fi
+
+if [ "$SEARCH_RESTART_COMMAND" = "kill-java" ]; then
+	# kill them all and let god sort them out! Besides, fuck Java!
+	do_restart kill_java || exit 1
+	exit 0
+fi
+
+echo "Unrecognised command for $0" >&2
+echo "The command was: $SEARCH_RESTART_COMMAND" >&2
+echo "Known commands are: kill-java|svc" >&2
+exit 1
