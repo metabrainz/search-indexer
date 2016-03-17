@@ -9,4 +9,4 @@ SEARCH_CONFIG="$HOME/mb_search_server.conf"
 
 [ ! -e "$SEARCH_HOME/tmp" ] && mkdir -p "$SEARCH_HOME/tmp"
 
-exec runexclusive -f "$SEARCH_HOME/tmp/freedb.lock" --no-wait -t 36000 $SEARCH_HOME/bin/get-this-month-freedb
+exec $SEARCH_HOME/bin/runexclusive -f "$SEARCH_HOME/tmp/freedb.lock" --no-wait -t 36000 $SEARCH_HOME/bin/get-this-month-freedb
